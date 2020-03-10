@@ -7,6 +7,7 @@ extern "C" {
 
 #define TCS34725_REGISTER_SIZE 1
 #define TCS34725_RGBC_BYTES 8
+#define TCS34725_THRESHOLD_BYTES 4
 
 #define TCS34725_REG_ENABLE 0x00
 #define TCS34725_REG_TIMING 0x01
@@ -41,8 +42,7 @@ extern "C" {
 #define TCS34725_WAIT_LONG_POS 1
 #define TCS34725_WAIT_LONG_MASK (1 << TCS34725_WAIT_LONG_POS)
 
-#define TCS34725_THRESHOLD_LOW 0
-#define TCS34725_THRESHOLD_HIGH 1
+
 
 /**
  * @brief Structure holding sensor instance

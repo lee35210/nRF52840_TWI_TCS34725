@@ -66,11 +66,11 @@
   <Watches active="0" update="Never"/>
  </Watch4>
  <Files>
-  <SessionOpenFile windowGroup="DockEditLeft" x="30" y="529" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../main.c" selected="1" top="517" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="39" y="436" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../main.c" selected="0" top="403" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="0" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../tcs34725/tcs34725.c" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="4" y="90" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../tcs34725/tcs34725.h" selected="0" top="66" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="7" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../tcs34725/tcs34725_internal.h" selected="0" top="0" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="154" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../mlx90614/mlx90614.c" selected="0" top="130" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="91" y="121" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../tcs34725/tcs34725.h" selected="0" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="29" y="9" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../tcs34725/tcs34725_internal.h" selected="1" top="0" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="154" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../mlx90614/mlx90614.c" selected="0" top="68" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="44" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../mlx90614/mlx90614.h" selected="0" top="21" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="23" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../mlx90614/mlx90614_internal.h" selected="0" top="0" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="100" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/drivers_ext/hts221/hts221.c" selected="0" top="79" codecName="Default"/>
@@ -83,15 +83,15 @@
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="224" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/drivers/include/nrfx_twim.h" selected="0" top="203" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="221" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/drivers/src/nrfx_twim.c" selected="0" top="185" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="116" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/hal/nrf_twi.h" selected="0" top="95" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="84" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/twi_sensor/nrf_twi_sensor.h" selected="0" top="57" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="16" y="72" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/twi_sensor/nrf_twi_sensor.h" selected="0" top="57" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="339" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/pwr_mgmt/nrf_pwr_mgmt.c" selected="0" top="298" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="73" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/twi_sensor/nrf_twi_sensor.c" selected="0" top="52" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="77" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../integration/nrfx/legacy/nrf_drv_gpiote.h" selected="0" top="56" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="159" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/drivers/include/nrfx_gpiote.h" selected="0" top="138" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="564" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../modules/nrfx/drivers/src/nrfx_gpiote.c" selected="0" top="544" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="39" y="75" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/bsp/bsp.c" selected="0" top="103" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="8" y="81" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/boards/pca10056.h" selected="0" top="61" codecName="Default"/>
-  <SessionOpenFile windowGroup="DockEditLeft" x="81" y="292" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/button/app_button.c" selected="0" top="260" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="75" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/bsp/bsp.c" selected="0" top="55" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="81" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/boards/pca10056.h" selected="0" top="61" codecName="Default"/>
+  <SessionOpenFile windowGroup="DockEditLeft" x="0" y="292" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/button/app_button.c" selected="0" top="260" codecName="Default"/>
   <SessionOpenFile windowGroup="DockEditLeft" x="0" y="93" useTextEdit="1" useBinaryEdit="0" left="0" path="../../../../../../components/libraries/button/app_button.h" selected="0" top="73" codecName="Default"/>
  </Files>
  <ARMCrossStudioWindow activeProject="twi_master_using_nrf_twi_mngr_pca10056" fileDialogDefaultFilter="*.c" autoConnectTarget="J-Link" buildConfiguration="Release" sessionSettings="" debugSearchFileMap="C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 4.30c/source/thumb_crt0.s&#xa;C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 4.40/source/thumb_crt0.s" fileDialogInitialDirectory="C:/Program Files/SEGGER/SEGGER Embedded Studio for ARM 4.40/source" debugSearchPath="" autoConnectCapabilities="3711"/>

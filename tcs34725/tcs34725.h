@@ -97,6 +97,12 @@ typedef enum
 
 typedef enum
 {
+    TCS34725_THRESHOLD_LOW,
+    TCS34725_THRESHOLD_HIGH
+}tcs34725_threshold_lh_t;
+
+typedef enum
+{
     TCS34725_GAIN_x1,
     TCS34725_GAIN_x4,
     TCS34725_GAIN_x16,
@@ -114,6 +120,7 @@ typedef void (* tcs34725_data_callback_t)(ret_code_t result, tcs34725_reg_data_t
 
 typedef void (* tcs34725_rgbc_callback_t)(ret_code_t result, tcs34725_color_data_t * p_raw_data);
 
+typedef void (* tcs34725_threshold_callback_t)(ret_code_t result, tcs34725_threshold_data_t * p_raw_data);
 
 
 #endif // TCS34725_H

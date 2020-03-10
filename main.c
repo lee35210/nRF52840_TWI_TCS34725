@@ -153,21 +153,6 @@ ret_code_t tcs34725_write_reg(tcs34725_instance_t const * p_instance,
 
 
 
-static void tcs34725_read_thr_cb(tcs34725_instance_t const * p_instance,
-                                 tcs34725_threshold_data_t * p_reg_data)
-{
-    switch(p_reg_data->reg_addr)
-    {
-        case TCS34725_REG_THRESHOLD_LOW_L :
-            NRF_LOG_INFO("Threshold Low value : %X",p_reg_data->threshold_data);
-            break;
-        case TCS34725_REG_THRESHOLD_HIGH_L :
-            NRF_LOG_INFO("Threshold High value : %X",p_reg_data->threshold_data);
-            break;
-        default :
-            break;
-    }
-}
 
 ret_code_t tcs34725_set_init(tcs34725_instance_t const * p_instance,
                               tcs34725_config_enable_t *  config)
@@ -247,32 +232,6 @@ static void tcs34725_set_wait_time(tcs34725_instance_t const * p_instance,
     tcs34725_write_reg(p_instance,&wait_time_str);
 }
 
-static void tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
-                                   uint8_t threshold_low_high,
-                                   uint16_t threshold_val)
-{
-    tcs34725_threshold_data_t threshold_str;
-    threshold_str.threshold_data=threshold_val;
-
-    if(threshold_low_high==TCS34725_THRESHOLD_LOW)
-    {
-        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
-    }
-    else if(threshold_low_high==TCS34725_THRESHOLD_HIGH)
-    {
-        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
-    }
-    else
-    {
-        return;
-    }
-
-    nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-                             p_instance->sensor_addr,
-                             threshold_str.reg_addr,
-                             (uint8_t *)&threshold_str,
-                             sizeof(threshold_str)/sizeof(uint8_t));
-}
 
 static void tcs34725_set_persistence(tcs34725_instance_t const * p_instance,
                                      tcs34725_persistence_t out_of_range_val)
@@ -281,12 +240,6 @@ static void tcs34725_set_persistence(tcs34725_instance_t const * p_instance,
     persistence.reg_addr=TCS34725_REG_PERSISTENCE;
     persistence.reg_data=out_of_range_val;
     tcs34725_write_reg(p_instance, &persistence);
-
-//    nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-//                             p_instance->sensor_addr,
-//                             TCS34725_REG_PERSISTENCE,
-//                             (uint8_t *)&out_of_range_val,
-//                             sizeof(uint8_t));
 }
 
 static void tcs34725_set_wait_long(tcs34725_instance_t const * p_instance,
@@ -295,7 +248,6 @@ static void tcs34725_set_wait_long(tcs34725_instance_t const * p_instance,
     tcs34725_reg_data_t wait_long;
     wait_long.reg_addr=TCS34725_REG_WAIT_TIME;
     wait_long.reg_data=wait_long_val << TCS34725_WAIT_LONG_POS;
-
     tcs34725_write_reg(p_instance, &wait_long);
 }
 
@@ -306,12 +258,6 @@ static void tcs34725_set_gain(tcs34725_instance_t const * p_instance,
     gain.reg_addr=TCS34725_REG_CONTROL;
     gain.reg_data=gain_val;
     tcs34725_write_reg(p_instance, &gain);
-
-//    nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-//                             p_instance->sensor_addr,
-//                             (TCS34725_REG_CONTROL|0xA0),
-//                             (uint8_t *)&gain_val,
-//                             sizeof(uint8_t));
 }
 
 static void tcs34725_read_rgbc(tcs34725_instance_t const * p_instance,
@@ -336,7 +282,6 @@ static void tcs34725_read_rgbc(tcs34725_instance_t const * p_instance,
 void tcs34725_read_reg_cb(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
 {
     p_raw_data->reg_addr&=0x1F;
-//    NRF_LOG_INFO("reg cb : %X %X",p_raw_data->reg_data, p_raw_data->reg_addr);
 
     switch(p_raw_data->reg_addr)
     {
@@ -368,16 +313,6 @@ void tcs34725_read_reg_cb(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
             break;
     }
 }
-
-//void tcs_reg_callback(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
-//{
-//    if(result!=NRF_SUCCESS)
-//    {
-//        NRF_LOG_INFO("tcs reg callback failed");
-//        return;
-//    }
-//    NRF_LOG_INFO("REG : %X",p_raw_data->reg_data);
-//}
 
 static void rgbc_print(tcs34725_color_data_t * color_str)
 {
@@ -467,17 +402,69 @@ void tcs_rgbc_callback(ret_code_t result, tcs34725_color_data_t * p_raw_data)
         return;
     }
     rgbc_print(p_raw_data);
-
-//    NRF_LOG_INFO("Clear : %X, %d",p_raw_data->clear,p_raw_data->clear);
-//    NRF_LOG_INFO("Red : %X, %d",p_raw_data->red,p_raw_data->red);
-//    NRF_LOG_INFO("Green : %X, %d",p_raw_data->green,p_raw_data->green);
-//    NRF_LOG_INFO("Blue : %X, %d",p_raw_data->blue,p_raw_data->blue);
 }
 
 
 static void tcs34725_calibration()
 {
     
+}
+
+static void tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
+                                   tcs34725_threshold_lh_t threshold_low_high,
+                                   uint16_t threshold_val)
+{
+    tcs34725_threshold_data_t threshold_str;
+    threshold_str.threshold_data=threshold_val;
+
+    if(threshold_low_high==TCS34725_THRESHOLD_LOW)
+    {
+        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
+    }
+    else if(threshold_low_high==TCS34725_THRESHOLD_HIGH)
+    {
+        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
+    }
+    else
+    {
+        return;
+    }
+
+    nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
+                             p_instance->sensor_addr,
+                             threshold_str.reg_addr,
+                             (uint8_t *)&threshold_str,
+                             TCS34725_THRESHOLD_BYTES);
+}
+
+static void tcs34725_read_thr_cb(tcs34725_instance_t const * p_instance,
+                                 tcs34725_threshold_data_t * p_reg_data)
+{
+    switch(p_reg_data->reg_addr)
+    {
+        case TCS34725_REG_THRESHOLD_LOW_L :
+            NRF_LOG_INFO("Threshold Low value : %X",p_reg_data->threshold_data);
+            break;
+        case TCS34725_REG_THRESHOLD_HIGH_L :
+            NRF_LOG_INFO("Threshold High value : %X",p_reg_data->threshold_data);
+            break;
+        default :
+            break;
+    }
+}
+
+
+static void tcs34725_read_threshold(tcs34725_instance_t const * p_instance, 
+                                    tcs34725_threshold_data_t * thr_data,
+                                    tcs34725_threshold_callback_t user_cb)
+{
+    ret_code_t err_code;
+    err_code=nrf_twi_sensor_reg_read(p_instance->p_sensor_data,
+                           p_instance->sensor_addr,
+                           thr_data->reg_addr|0xA0,
+                           (nrf_twi_sensor_reg_cb_t) user_cb,
+                           (uint8_t *) thr_data,
+                           TCS34725_THRESHOLD_BYTES);
 }
 
 void timer_handler(void * p_context)
