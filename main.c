@@ -440,16 +440,13 @@ static void tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
 static void tcs34725_read_thr_cb(tcs34725_instance_t const * p_instance,
                                  tcs34725_threshold_data_t * p_reg_data)
 {
-    switch(p_reg_data->reg_addr)
+    if(p_reg_data->reg_addr==TCS34725_REG_THRESHOLD_LOW_L)
     {
-        case TCS34725_REG_THRESHOLD_LOW_L :
-            NRF_LOG_INFO("Threshold Low value : %X",p_reg_data->threshold_data);
-            break;
-        case TCS34725_REG_THRESHOLD_HIGH_L :
-            NRF_LOG_INFO("Threshold High value : %X",p_reg_data->threshold_data);
-            break;
-        default :
-            break;
+        NRF_LOG_INFO("Threshold Low value : %X",p_reg_data->threshold_data);
+    }
+    else
+    {
+        NRF_LOG_INFO("Threshold High value : %X",p_reg_data->threshold_data);
     }
 }
 
@@ -464,7 +461,19 @@ static void tcs34725_read_threshold(tcs34725_instance_t const * p_instance,
                            thr_data->reg_addr|0xA0,
                            (nrf_twi_sensor_reg_cb_t) user_cb,
                            (uint8_t *) thr_data,
-                           TCS34725_THRESHOLD_BYTES);
+                           TCS34725_THRESHOLD_BYTES/2);
+}
+
+static void tcs34725_read_all_threshold(tcs34725_instance_t const * p_instance,
+                                        tcs34725_threshold_callback_t user_cb)
+{
+    tcs34725_threshold_data_t threshold_low, threshold_high;
+    threshold_low.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
+    threshold_high.reg_addr=TCS34725_REG_THRESHOLD_HIGH_H;
+
+    tcs34725_read_threshold(p_instance, &threshold_low, user_cb);
+    tcs34725_read_threshold(p_instance, &threshold_high, user_cb);
+
 }
 
 void timer_handler(void * p_context)
