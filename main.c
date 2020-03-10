@@ -437,7 +437,7 @@ static void tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
                              TCS34725_THRESHOLD_BYTES);
 }
 
-static void tcs34725_read_thr_cb(tcs34725_instance_t const * p_instance,
+static void tcs34725_read_thr_cb(ret_code_t result,
                                  tcs34725_threshold_data_t * p_reg_data)
 {
     if(p_reg_data->reg_addr==TCS34725_REG_THRESHOLD_LOW_L)
@@ -530,33 +530,33 @@ static void buttons_init(void)
     err_code = app_button_enable();
 }
 
-static void tcs34725_read_all_config()
+static void tcs34725_read_all_config(tcs34725_instance_t const * p_instance, tcs34725_data_callback_t user_cb)
 {
     tcs34725_reg_data_t enable,timing,waittime,persistence,config,control,id,status;
 
     enable.reg_addr=TCS34725_REG_ENABLE;
-    tcs34725_read_reg(&tcs34725_instance, &enable, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &enable, user_cb);
 
     timing.reg_addr=TCS34725_REG_TIMING;
-    tcs34725_read_reg(&tcs34725_instance, &timing, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &timing, user_cb);
 
     waittime.reg_addr=TCS34725_REG_WAIT_TIME;
-    tcs34725_read_reg(&tcs34725_instance, &waittime, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &waittime, user_cb);
 
     persistence.reg_addr=TCS34725_REG_PERSISTENCE;
-    tcs34725_read_reg(&tcs34725_instance, &persistence, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &persistence, user_cb);
 
     config.reg_addr=TCS34725_REG_CONFIG;
-    tcs34725_read_reg(&tcs34725_instance, &config, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &config, user_cb);
 
     control.reg_addr=TCS34725_REG_CONTROL;
-    tcs34725_read_reg(&tcs34725_instance, &control, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &control, user_cb);
 
     id.reg_addr=TCS34725_REG_ID;
-    tcs34725_read_reg(&tcs34725_instance, &id, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &id, user_cb);
 
     status.reg_addr=TCS34725_REG_STATUS;
-    tcs34725_read_reg(&tcs34725_instance, &status, tcs34725_read_reg_cb);
+    tcs34725_read_reg(p_instance, &status, user_cb);
 }
 
 int main(void)
@@ -595,7 +595,8 @@ int main(void)
 //    tcs34725_set_gain(&tcs34725_instance, TCS34725_GAIN_x16);
 
 
-    tcs34725_read_all_config();
+    tcs34725_read_all_config(&tcs34725_instance, tcs34725_read_reg_cb);
+    tcs34725_read_all_threshold(&tcs34725_instance, tcs34725_read_thr_cb);
 
     nrf_delay_ms(100);
     timer_init();
