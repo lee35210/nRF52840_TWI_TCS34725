@@ -97,6 +97,12 @@ typedef enum
 
 typedef enum
 {
+    TCS34725_INTERRUPT_DISABLE,
+    TCS34725_INTERRUPT_ENABLE
+}tcs34725_int_enable_t;
+
+typedef enum
+{
     TCS34725_THRESHOLD_LOW,
     TCS34725_THRESHOLD_HIGH
 }tcs34725_threshold_lh_t;
