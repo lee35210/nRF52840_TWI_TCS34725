@@ -170,82 +170,17 @@ ret_code_t tcs34725_read_rgbc(tcs34725_instance_t const * p_instance,
 
 void tcs34725_rgbc_print(tcs34725_color_data_t * color_str)
 {
-    double max_value;
-    float red,blue,green;
     uint16_t c_red,c_green,c_blue;
-    uint32_t sum;
-
-    if(color_str->blue <= color_str->red)
-    {
-        if(color_str->red <= color_str->green)
-        {
-            max_value=color_str->green;
-        }
-        else
-        {
-            max_value=color_str->red;
-        }
-    }
-    else if(color_str->red <= color_str->blue)
-    {
-        if(color_str->blue <= color_str->green)
-        {
-            max_value=color_str->green;
-        }
-        else
-        {
-            max_value=color_str->blue;
-        }
-    }
-    if(color_str->red <= color_str->green)
-    {
-        if(color_str->green <= color_str->blue)
-        {
-            max_value=color_str->blue;
-        }
-        else
-        {
-            max_value=color_str->green;
-        }
-    }
-
-    sum=color_str->red+color_str->green+color_str->blue;
-
-    c_red=(int)((double)color_str->red/sum*255);
-    c_green=(int)((double)color_str->green/sum*255);
-    c_blue=(int)((double)color_str->blue/sum*255);
-
-//    NRF_LOG_INFO("Original");
-    NRF_LOG_INFO("Clear : %d",color_str->clear);
-//    NRF_LOG_INFO("Red   : %d",c_red);
-//    NRF_LOG_INFO("Green : %d",c_green);
-//    NRF_LOG_INFO("Blue  : %d",c_blue);
 
     c_red=(int)((double)color_str->red/color_str->clear*255);
     c_green=(int)((double)color_str->green/color_str->clear*255);
     c_blue=(int)((double)color_str->blue/color_str->clear*255);
 
-//    NRF_LOG_INFO("Clear");
-//    NRF_LOG_INFO("Red   : %d",c_red);
-//    NRF_LOG_INFO("Green : %d",c_green);
-//    NRF_LOG_INFO("Blue  : %d",c_blue);
-//    NRF_LOG_INFO("Clear");
+
+    NRF_LOG_INFO("Clear : %d",color_str->clear);
     NRF_LOG_INFO("Red   : %d",c_red);
     NRF_LOG_INFO("Green : %d",c_green);
     NRF_LOG_INFO("Blue  : %d",c_blue);
-
-    red=(color_str->red/max_value);
-    green=(color_str->green/max_value);
-    blue=(color_str->blue/max_value);
-
-    color_str->red=(int)(red*255);
-    color_str->green=(int)(green*255);
-    color_str->blue=(int)(blue*255);
-    
-//    NRF_LOG_INFO("Max");
-//    NRF_LOG_INFO("Red   : %d",color_str->red);
-//    NRF_LOG_INFO("Green : %d",color_str->green);
-//    NRF_LOG_INFO("Blue  : %d",color_str->blue);
 }
 
 ret_code_t tcs34725_set_threshold(tcs34725_instance_t const * p_instance,

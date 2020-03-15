@@ -300,7 +300,7 @@ void tcs34725_start()
     err_code=tcs34725_init(&tcs34725_instance);
     APP_ERROR_CHECK(err_code);
 
-    err_code=tcs34725_set_timing(&tcs34725_instance, 130);  //1~256
+    err_code=tcs34725_set_timing(&tcs34725_instance, 150);  //1~256
     APP_ERROR_CHECK(err_code);
 
     err_code=tcs34725_set_wait_time(&tcs34725_instance, 255);   //1~256
