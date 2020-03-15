@@ -107,18 +107,10 @@
       <file file_name="../../../../../../modules/nrfx/mdk/ses_startup_nrf_common.s" />
       <file file_name="../../../../../../modules/nrfx/mdk/system_nrf52840.c" />
     </folder>
-    <folder Name="MLX90614">
-      <file file_name="../../../mlx90614/mlx90614.c" />
-    </folder>
     <folder Name="TCS34725">
       <file file_name="../../../tcs34725/tcs34725.h" />
       <file file_name="../../../tcs34725/tcs34725.c" />
       <file file_name="../../../tcs34725/tcs34725_internal.h" />
-    </folder>
-    <folder Name="New Folder">
-      <file file_name="../../../../../../components/drivers_ext/hts221/hts221.h" />
-      <file file_name="../../../../../../components/drivers_ext/hts221/hts221_internal.h" />
-      <file file_name="../../../../../../components/drivers_ext/hts221/hts221.c" />
     </folder>
   </project>
   <configuration

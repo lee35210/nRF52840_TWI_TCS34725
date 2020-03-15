@@ -128,179 +128,6 @@ static void lfclk_config(void)
     nrf_drv_clock_lfclk_request(NULL);
 }
 
-
-ret_code_t tcs34725_read_reg(tcs34725_instance_t const * p_instance,
-                              tcs34725_reg_data_t *      p_reg_data,
-                              tcs34725_data_callback_t   user_cb
-                             )
-{
-    return nrf_twi_sensor_reg_read(p_instance->p_sensor_data,
-                                   p_instance->sensor_addr,
-                                   p_reg_data->reg_addr|0x80,
-                                   (nrf_twi_sensor_reg_cb_t) user_cb,
-                                   (uint8_t *) p_reg_data,
-                                   TCS34725_REGISTER_SIZE);
-}
-
-
-ret_code_t tcs34725_write_reg(tcs34725_instance_t const * p_instance,
-                              tcs34725_reg_data_t *       p_reg_data)
-{
-    return nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-                                    p_instance->sensor_addr,
-                                    p_reg_data->reg_addr|0x80,
-                                    (uint8_t *)&p_reg_data->reg_data,
-                                    TCS34725_REGISTER_SIZE);
-}
-
-
-
-
-ret_code_t tcs34725_set_init(tcs34725_instance_t const * p_instance,
-                              tcs34725_config_enable_t *  config)
-{
-    ret_code_t err_code;
-    tcs34725_reg_data_t enable_reg;
-
-    enable_reg.reg_data=(config->rgbc_interrupt << TCS34725_INT_POS)|
-                        (config->wait_enable << TCS34725_WAIT_POS)|
-                        (config->rgbc_enable << TCS34725_RGBC_ENABLE_POS)|
-                        (config->power_on << TCS34725_POWER_ON_POS);
-
-    NRF_LOG_INFO("init config : %X", enable_reg.reg_data);
-    
-    enable_reg.reg_addr=TCS34725_REG_ENABLE|0x80;
-
-    tcs34725_write_reg(&tcs34725_instance, &enable_reg);
-
-//    err_code=nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-//                                    p_instance->sensor_addr,
-//                                    TCS34725_REG_ENABLE,
-//                                    (uint8_t *)&configuration,
-//                                    TCS34725_REGISTER_BYTES);
-    
-    if (err_code != NRF_SUCCESS)
-    {
-        NRF_LOG_WARNING("TCS34725 Init wrtie failed");
-//        return err_code;
-    }
-
-    return err_code;
-}
-
-ret_code_t tcs34725_init(tcs34725_instance_t const * p_instance)
-{
-    //int enable, wait enable, rgbc enable, power on/off
-    ret_code_t err_code;
-    tcs34725_reg_data_t enable_reg;
-
-    tcs34725_config_enable_t init_config;
-    init_config.rgbc_interrupt=false;   //bit4
-    init_config.wait_enable=true;       //bit3
-    init_config.rgbc_enable=true;       //bit1
-    init_config.power_on=true;          //bit0
-
-//    err_code=tcs34725_set_init(p_instance, &init_config);
-    enable_reg.reg_addr=TCS34725_REG_ENABLE;
-    enable_reg.reg_data=(init_config.rgbc_interrupt << TCS34725_INT_POS)|
-                        (init_config.wait_enable << TCS34725_WAIT_POS)|
-                        (init_config.rgbc_enable << TCS34725_RGBC_ENABLE_POS)|
-                        (init_config.power_on << TCS34725_POWER_ON_POS);
-
-    err_code=tcs34725_write_reg(&tcs34725_instance, &enable_reg);
-    return err_code;
-}
-
-ret_code_t tcs34725_set_timing(tcs34725_instance_t const * p_instance,
-                                uint16_t atime)
-{
-    ret_code_t err_code;
-    if((atime==0)||(256 < atime))
-    {
-        err_code=NRF_ERROR_INVALID_DATA;
-        return err_code;
-    }
-
-    tcs34725_reg_data_t timing_str;
-    timing_str.reg_addr=TCS34725_REG_TIMING;
-    timing_str.reg_data=(256-atime);
-    
-    err_code=tcs34725_write_reg(p_instance,&timing_str);
-    return err_code;
-}
-
-ret_code_t tcs34725_set_wait_time(tcs34725_instance_t const * p_instance,
-                                  uint8_t wait_val)
-{
-    ret_code_t err_code;
-    if((wait_val==0)||(256 < wait_val))
-    {
-        err_code=NRF_ERROR_INVALID_DATA;
-        return err_code;
-    }
-
-    tcs34725_reg_data_t wait_time_str;
-    wait_time_str.reg_addr=TCS34725_REG_WAIT_TIME;
-    wait_time_str.reg_data=wait_val;
-    
-    err_code=tcs34725_write_reg(p_instance,&wait_time_str);
-    return err_code;
-}
-
-
-ret_code_t tcs34725_set_persistence(tcs34725_instance_t const * p_instance,
-                                    tcs34725_persistence_t out_of_range_val)
-{
-    ret_code_t err_code;
-    tcs34725_reg_data_t persistence;
-    persistence.reg_addr=TCS34725_REG_PERSISTENCE;
-    persistence.reg_data=out_of_range_val;
-    err_code=tcs34725_write_reg(p_instance, &persistence);
-    return err_code;
-}
-
-ret_code_t tcs34725_set_wait_long(tcs34725_instance_t const * p_instance,
-                                   tcs34725_wait_long_t wait_long_val)
-{
-    ret_code_t err_code;
-    tcs34725_reg_data_t wait_long;
-    wait_long.reg_addr=TCS34725_REG_WAIT_TIME;
-    wait_long.reg_data=wait_long_val << TCS34725_WAIT_LONG_POS;
-    err_code=tcs34725_write_reg(p_instance, &wait_long);
-    return err_code;
-}
-
-ret_code_t tcs34725_set_gain(tcs34725_instance_t const * p_instance,
-                                 tcs34725_gain_t gain_val)
-{
-    ret_code_t err_code;
-    tcs34725_reg_data_t gain;
-    gain.reg_addr=TCS34725_REG_CONTROL;
-    gain.reg_data=gain_val;
-    err_code=tcs34725_write_reg(p_instance, &gain);
-    return err_code;
-}
-
-ret_code_t tcs34725_read_rgbc(tcs34725_instance_t const * p_instance,
-                               tcs34725_color_data_t *     rgbc_str,
-                               tcs34725_rgbc_callback_t    user_cb)
-{
-    ret_code_t err_code;
-    err_code=nrf_twi_sensor_reg_read(p_instance->p_sensor_data,
-                           p_instance->sensor_addr,
-                           (TCS34725_REG_CLEAR|0xA0),
-                           (nrf_twi_sensor_reg_cb_t) user_cb,
-                           (uint8_t *) rgbc_str,
-                           TCS34725_RGBC_BYTES);
-    if(err_code!=NRF_SUCCESS)
-    {
-        NRF_LOG_INFO("Read RGBC Failed");
-    }
-    return err_code;
-}
-
-
-
 void tcs34725_read_reg_cb(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
 {
     if(result!=NRF_SUCCESS)
@@ -341,86 +168,6 @@ void tcs34725_read_reg_cb(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
     }
 }
 
-void tcs34725_rgbc_print(tcs34725_color_data_t * color_str)
-{
-    double max_value;
-    float red,blue,green;
-    uint16_t c_red,c_green,c_blue;
-    uint32_t sum;
-
-    if(color_str->blue <= color_str->red)
-    {
-        if(color_str->red <= color_str->green)
-        {
-            max_value=color_str->green;
-        }
-        else
-        {
-            max_value=color_str->red;
-        }
-    }
-    else if(color_str->red <= color_str->blue)
-    {
-        if(color_str->blue <= color_str->green)
-        {
-            max_value=color_str->green;
-        }
-        else
-        {
-            max_value=color_str->blue;
-        }
-    }
-    if(color_str->red <= color_str->green)
-    {
-        if(color_str->green <= color_str->blue)
-        {
-            max_value=color_str->blue;
-        }
-        else
-        {
-            max_value=color_str->green;
-        }
-    }
-
-    sum=color_str->red+color_str->green+color_str->blue;
-
-    c_red=(int)((double)color_str->red/sum*255);
-    c_green=(int)((double)color_str->green/sum*255);
-    c_blue=(int)((double)color_str->blue/sum*255);
-
-//    NRF_LOG_INFO("Original");
-    NRF_LOG_INFO("Clear : %d",color_str->clear);
-//    NRF_LOG_INFO("Red   : %d",c_red);
-//    NRF_LOG_INFO("Green : %d",c_green);
-//    NRF_LOG_INFO("Blue  : %d",c_blue);
-
-    c_red=(int)((double)color_str->red/color_str->clear*255);
-    c_green=(int)((double)color_str->green/color_str->clear*255);
-    c_blue=(int)((double)color_str->blue/color_str->clear*255);
-
-//    NRF_LOG_INFO("Clear");
-//    NRF_LOG_INFO("Red   : %d",c_red);
-//    NRF_LOG_INFO("Green : %d",c_green);
-//    NRF_LOG_INFO("Blue  : %d",c_blue);
-//    NRF_LOG_INFO("Clear");
-    NRF_LOG_INFO("Red   : %d",c_red);
-    NRF_LOG_INFO("Green : %d",c_green);
-    NRF_LOG_INFO("Blue  : %d",c_blue);
-
-    red=(color_str->red/max_value);
-    green=(color_str->green/max_value);
-    blue=(color_str->blue/max_value);
-
-    color_str->red=(int)(red*255);
-    color_str->green=(int)(green*255);
-    color_str->blue=(int)(blue*255);
-    
-//    NRF_LOG_INFO("Max");
-//    NRF_LOG_INFO("Red   : %d",color_str->red);
-//    NRF_LOG_INFO("Green : %d",color_str->green);
-//    NRF_LOG_INFO("Blue  : %d",color_str->blue);
-}
-
 void tcs34725_rgbc_callback(ret_code_t result, tcs34725_color_data_t * p_raw_data)
 {
     if(result!=NRF_SUCCESS)
@@ -429,42 +176,6 @@ void tcs34725_rgbc_callback(ret_code_t result, tcs34725_color_data_t * p_raw_dat
         return;
     }
     tcs34725_rgbc_print(p_raw_data);
-}
-
-
-static void tcs34725_calibration()
-{
-    
-}
-
-ret_code_t tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
-                                  tcs34725_threshold_lh_t threshold_low_high,
-                                  uint16_t threshold_val)
-{
-    ret_code_t err_code;
-    tcs34725_threshold_data_t threshold_str;
-    threshold_str.threshold_data=threshold_val;
-
-    if(threshold_low_high==TCS34725_THRESHOLD_LOW)
-    {
-        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
-    }
-    else if(threshold_low_high==TCS34725_THRESHOLD_HIGH)
-    {
-        threshold_str.reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
-    }
-    else
-    {
-        err_code=NRF_ERROR_INVALID_ADDR;
-        return err_code;
-    }
-
-    NRF_LOG_INFO("Set threshold value : %d",threshold_str.threshold_data);
-    err_code=nrf_twi_sensor_reg_write(p_instance->p_sensor_data,
-                                      p_instance->sensor_addr,
-                                      threshold_str.reg_addr|0xA0,
-                                      (uint8_t *)&threshold_str,
-                                      TCS34725_THRESHOLD_BYTES);
 }
 
 void tcs34725_read_thr_cb(ret_code_t result, tcs34725_threshold_data_t * p_reg_data)
@@ -484,46 +195,12 @@ void tcs34725_read_thr_cb(ret_code_t result, tcs34725_threshold_data_t * p_reg_d
     }
 }
 
-
-ret_code_t tcs34725_read_threshold(tcs34725_instance_t const * p_instance, 
-                                   tcs34725_threshold_lh_t thr_low_high,
-                                   tcs34725_threshold_callback_t user_cb)
-{
-    ret_code_t err_code;
-    static tcs34725_threshold_data_t thr_data_str;
-
-    if(thr_low_high==TCS34725_THRESHOLD_LOW)
-    {
-        thr_data_str.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
-    }
-    else if(thr_low_high==TCS34725_THRESHOLD_HIGH)
-    {
-        thr_data_str.reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
-    }
-    else
-    {
-        err_code=NRF_ERROR_INVALID_ADDR;
-        return err_code;
-    }
-
-    err_code=nrf_twi_sensor_reg_read(p_instance->p_sensor_data,
-                                     p_instance->sensor_addr,
-                                     thr_data_str.reg_addr|0xA0,
-                                     (nrf_twi_sensor_reg_cb_t) user_cb,
-                                     (uint8_t *) &thr_data_str,
-                                     TCS34725_THRESHOLD_BYTES);
-    return err_code;
-}
-
-
-ret_code_t tcs34725_int_clear(tcs34725_instance_t const * p_instance);
-
 void timer_handler(void * p_context)
 {
     ret_code_t err_code;
 
+    //RGBC read 함수 호출
     tcs34725_read_rgbc(&tcs34725_instance, &color_str, tcs34725_rgbc_callback);
-    tcs34725_int_clear(&tcs34725_instance);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -531,15 +208,16 @@ void timer_init(void)
 {
     ret_code_t err_code;
 
+    //타이머 생성, 반복 모드, 호출될 핸들러
     err_code = app_timer_create(&m_timer, APP_TIMER_MODE_REPEATED, timer_handler);
     APP_ERROR_CHECK(err_code);
 
+    //APP_TIMER_TICKS()에 입력된 시간마다 핸들러 호출(           ms 단위)
     err_code = app_timer_start(m_timer, APP_TIMER_TICKS(5000), NULL);
     APP_ERROR_CHECK(err_code);
 }
 
-ret_code_t tcs34725_set_interrupt(tcs34725_instance_t const * p_instance,
-                                  tcs34725_int_enable_t int_enable);
+
 static void button_event_handler(uint8_t pin_no, uint8_t button_action)
 {
     ret_code_t err_code;
@@ -558,17 +236,7 @@ static void button_event_handler(uint8_t pin_no, uint8_t button_action)
     {
         NRF_LOG_INFO("TCS34725 Interrupt disable")
         tcs34725_set_interrupt(&tcs34725_instance,TCS34725_INTERRUPT_DISABLE);
-    }
-
-//    switch(button_action)
-//    {
-//        case APP_BUTTON_PUSH :
-//            nrf_gpio_pin_toggle(TCS34725_LED_PIN);
-//            break;
-//        case APP_BUTTON_RELEASE :
-//            break;
-//    }
-    
+    }    
 }
 
 static void buttons_init(void)
@@ -592,43 +260,20 @@ static void buttons_init(void)
     err_code = app_button_enable();
 }
 
-void tcs34725_read_all_config(tcs34725_instance_t const * p_instance, tcs34725_data_callback_t user_cb)
-{
-    NRF_LOG_INFO("read all config");
-    tcs34725_reg_data_t enable,timing,waittime,persistence,config,control,id,status;
-
-    enable.reg_addr=TCS34725_REG_ENABLE;
-    tcs34725_read_reg(p_instance, &enable, user_cb);
-
-    timing.reg_addr=TCS34725_REG_TIMING;
-    tcs34725_read_reg(p_instance, &timing, user_cb);
-
-    waittime.reg_addr=TCS34725_REG_WAIT_TIME;
-    tcs34725_read_reg(p_instance, &waittime, user_cb);
-
-    persistence.reg_addr=TCS34725_REG_PERSISTENCE;
-    tcs34725_read_reg(p_instance, &persistence, user_cb);
-
-    config.reg_addr=TCS34725_REG_CONFIG;
-    tcs34725_read_reg(p_instance, &config, user_cb);
-
-    control.reg_addr=TCS34725_REG_CONTROL;
-    tcs34725_read_reg(p_instance, &control, user_cb);
-
-    id.reg_addr=TCS34725_REG_ID;
-    tcs34725_read_reg(p_instance, &id, user_cb);
-
-    status.reg_addr=TCS34725_REG_STATUS;
-    tcs34725_read_reg(p_instance, &status, user_cb);
-}
-
 
 void in_pin_handler(nrf_drv_gpiote_pin_t pin, nrf_gpiote_polarity_t action)
 {
     if(pin==TCS34725_INT_PIN)
     {
+        ret_code_t err_code;
         NRF_LOG_INFO("TCS34725 RGBC Interrupt occured");
-        tcs34725_int_clear(&tcs34725_instance);
+        err_code=tcs34725_int_clear(&tcs34725_instance);
+        APP_ERROR_CHECK(err_code);
+        if(err_code==NRF_SUCCESS)
+        {
+            NRF_LOG_INFO("TCS34725 Clear channel interrupt clear");
+        }
+
     }
 }
 
@@ -641,50 +286,53 @@ static void gpio_init(void)
 
     nrf_drv_gpiote_in_config_t in_config = GPIOTE_CONFIG_IN_SENSE_HITOLO(true);
     in_config.pull = NRF_GPIO_PIN_PULLUP;
+
     err_code = nrf_drv_gpiote_in_init(TCS34725_INT_PIN, &in_config, in_pin_handler);
     APP_ERROR_CHECK(err_code);
 
     nrf_drv_gpiote_in_event_enable(TCS34725_INT_PIN, true);
 }
 
-ret_code_t tcs34725_int_clear(tcs34725_instance_t const * p_instance)
+void tcs34725_start()
 {
     ret_code_t err_code;
-    uint8_t interrupt_cmd=0x66|0x80;    //special function+cmd 1
-    err_code=nrf_twi_sensor_write(p_instance->p_sensor_data, p_instance->sensor_addr, &interrupt_cmd, 
-                                  TCS34725_REGISTER_SIZE, true);
-    return err_code;
+
+    err_code=tcs34725_init(&tcs34725_instance);
+    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_timing(&tcs34725_instance, 130);  //1~256
+    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_wait_time(&tcs34725_instance, 255);   //1~256
+    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_persistence(&tcs34725_instance, TCS34725_OUT_OF_RANGE_3);
+    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_gain(&tcs34725_instance, TCS34725_GAIN_x60);
+    APP_ERROR_CHECK(err_code);
+
+//    err_code=tcs34725_set_wait_long(&tcs34725_instance, TCS34725_WAIT_LONG_ENABLE);
+//    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_threshold(&tcs34725_instance, TCS34725_THRESHOLD_LOW, 10000);
+    APP_ERROR_CHECK(err_code);
+
+    err_code=tcs34725_set_threshold(&tcs34725_instance, TCS34725_THRESHOLD_HIGH, 65535);
+    APP_ERROR_CHECK(err_code);
 }
 
-
-ret_code_t tcs34725_set_interrupt(tcs34725_instance_t const * p_instance,
-                                  tcs34725_int_enable_t int_enable)
+void tcs34725_read_config()
 {
     ret_code_t err_code;
-    tcs34725_reg_data_t enable_reg_str;
-    enable_reg_str.reg_addr=TCS34725_REG_ENABLE;
-    tcs34725_read_reg(p_instance,&enable_reg_str,NULL);
-    
-    do
-    {
-        nrf_delay_us(10);
-    }while(nrf_twi_mngr_is_idle(&m_nrf_twi_mngr)!=true);
 
-    if(int_enable==TCS34725_INTERRUPT_ENABLE)
-    {
-        enable_reg_str.reg_data=(enable_reg_str.reg_data|(TCS34725_INT_MASK));
-    }
-    else if(int_enable==TCS34725_INTERRUPT_DISABLE)
-    {
-        enable_reg_str.reg_data=(enable_reg_str.reg_data&~(TCS34725_INT_MASK));
-    }
-    else
-    {
-        err_code=NRF_ERROR_INVALID_PARAM;
-        return err_code;
-    }
-    err_code=tcs34725_write_reg(p_instance, &enable_reg_str);
-    return err_code;
+    tcs34725_read_all_config(&tcs34725_instance, tcs34725_read_reg_cb);
+
+    err_code=tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_LOW, tcs34725_read_thr_cb);
+    APP_ERROR_CHECK(err_code);
+    nrf_delay_ms(10);
+    err_code=tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_HIGH, tcs34725_read_thr_cb);
+    APP_ERROR_CHECK(err_code);
 }
 
 int main(void)
@@ -693,45 +341,33 @@ int main(void)
 
     log_init();
     bsp_board_init(BSP_INIT_LEDS);
-
-    // Start internal LFCLK XTAL oscillator - it is needed by BSP to handle
-    // buttons with the use of APP_TIMER and for "read_all" ticks generation
-    // (by RTC).
     lfclk_config();
+
     err_code = app_timer_init();
     APP_ERROR_CHECK(err_code);
+
     NRF_LOG_RAW_INFO("\r\nTWI master example started. \r\n");
     NRF_LOG_FLUSH();
-
+    
+    //TCS34725 Interrupt 핀 체크
     gpio_init();
+
+    //LED 제어 및 인터럽트 활성화, 비활성화
     buttons_init();
+
+    //TWI 초기화 
     twi_config();
     err_code=nrf_twi_sensor_init(&sensor_instance);
     APP_ERROR_CHECK(err_code);
-    NRF_LOG_FLUSH();
     
-    tcs34725_init(&tcs34725_instance);
-    tcs34725_set_timing(&tcs34725_instance, 130);  //73 1~256 Max RGBC Count = Input Value × 1024 up to a maximum of 65535
-    tcs34725_set_wait_time(&tcs34725_instance, 255);    //1~256
-    tcs34725_set_persistence(&tcs34725_instance, TCS34725_OUT_OF_RANGE_10);
-    tcs34725_set_gain(&tcs34725_instance, TCS34725_GAIN_x60);
-//    tcs34725_set_wait_long(&tcs34725_instance, TCS34725_WAIT_LONG_ENABLE);
-    NRF_LOG_FLUSH();
+    //TCS34725 설정값들 전송
+    tcs34725_start();
 
-    tcs34725_read_all_config(&tcs34725_instance, tcs34725_read_reg_cb);
-
-    tcs34725_set_threshold(&tcs34725_instance, TCS34725_THRESHOLD_LOW, 10000);
-    tcs34725_set_threshold(&tcs34725_instance, TCS34725_THRESHOLD_HIGH, 65535);
-
-    tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_LOW, tcs34725_read_thr_cb);
-    nrf_delay_ms(10);
-    tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_HIGH, tcs34725_read_thr_cb);
-    NRF_LOG_FLUSH();
-
+    //TCS34725 현재 레지스터 설정값들 수신 후 출력
+    tcs34725_read_config();
+    
+    //타이머 시작
     timer_init();
-
-//    nrf_gpio_cfg_output(30);
-//    nrf_gpio_pin_write(30,0); //led off
 
     while (true)
     {

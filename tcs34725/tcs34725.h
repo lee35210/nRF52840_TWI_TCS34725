@@ -1,8 +1,8 @@
 #ifndef TCS34725_H
 #define TCS34725_H
 
-#include "tcs34725_internal.h"
 #include "nrf_twi_sensor.h"
+#include "tcs34725_internal.h"
 
 /**
  * @brief Possible sensor addresses.
@@ -128,5 +128,48 @@ typedef void (* tcs34725_rgbc_callback_t)(ret_code_t result, tcs34725_color_data
 
 typedef void (* tcs34725_threshold_callback_t)(ret_code_t result, tcs34725_threshold_data_t * p_raw_data);
 
+ret_code_t tcs34725_write_reg(tcs34725_instance_t const * p_instance,
+                              tcs34725_reg_data_t *       p_reg_data);
 
+ret_code_t tcs34725_read_reg(tcs34725_instance_t const * p_instance,
+                              tcs34725_reg_data_t *      p_reg_data,
+                              tcs34725_data_callback_t   user_cb);
+
+ret_code_t tcs34725_init(tcs34725_instance_t const * p_instance);
+
+ret_code_t tcs34725_set_timing(tcs34725_instance_t const * p_instance,
+                                uint16_t atime);
+
+ret_code_t tcs34725_set_wait_time(tcs34725_instance_t const * p_instance,
+                                  uint8_t wait_val);
+
+ret_code_t tcs34725_set_persistence(tcs34725_instance_t const * p_instance,
+                                    tcs34725_persistence_t out_of_range_val);
+                                    
+ret_code_t tcs34725_set_wait_long(tcs34725_instance_t const * p_instance,
+                                   tcs34725_wait_long_t wait_long_val);
+
+ret_code_t tcs34725_set_gain(tcs34725_instance_t const * p_instance,
+                                 tcs34725_gain_t gain_val);
+
+ret_code_t tcs34725_read_rgbc(tcs34725_instance_t const * p_instance,
+                               tcs34725_color_data_t *     rgbc_str,
+                               tcs34725_rgbc_callback_t    user_cb);
+
+void tcs34725_rgbc_print(tcs34725_color_data_t * color_str);
+
+ret_code_t tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
+                                  tcs34725_threshold_lh_t threshold_low_high,
+                                  uint16_t threshold_val);
+
+ret_code_t tcs34725_read_threshold(tcs34725_instance_t const * p_instance, 
+                                   tcs34725_threshold_lh_t thr_low_high,
+                                   tcs34725_threshold_callback_t user_cb);
+
+void tcs34725_read_all_config(tcs34725_instance_t const * p_instance, tcs34725_data_callback_t user_cb);
+
+ret_code_t tcs34725_int_clear(tcs34725_instance_t const * p_instance);
+
+ret_code_t tcs34725_set_interrupt(tcs34725_instance_t const * p_instance,
+                                  tcs34725_int_enable_t int_enable);
 #endif // TCS34725_H
