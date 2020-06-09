@@ -51,35 +51,6 @@ ret_code_t tcs34725_init(tcs34725_instance_t const * p_instance)
     return err_code;
 }
 
-void tcs34725_read_all_config(tcs34725_instance_t const * p_instance, tcs34725_data_callback_t user_cb)
-{
-    static tcs34725_reg_data_t enable,timing,waittime,persistence,config,control,id,status;
-
-    enable.reg_addr=TCS34725_REG_ENABLE;
-    tcs34725_read_reg(p_instance, &enable, user_cb);
-
-    timing.reg_addr=TCS34725_REG_TIMING;
-    tcs34725_read_reg(p_instance, &timing, user_cb);
-
-    waittime.reg_addr=TCS34725_REG_WAIT_TIME;
-    tcs34725_read_reg(p_instance, &waittime, user_cb);
-
-    persistence.reg_addr=TCS34725_REG_PERSISTENCE;
-    tcs34725_read_reg(p_instance, &persistence, user_cb);
-
-    config.reg_addr=TCS34725_REG_CONFIG;
-    tcs34725_read_reg(p_instance, &config, user_cb);
-
-    control.reg_addr=TCS34725_REG_CONTROL;
-    tcs34725_read_reg(p_instance, &control, user_cb);
-
-    id.reg_addr=TCS34725_REG_ID;
-    tcs34725_read_reg(p_instance, &id, user_cb);
-
-    status.reg_addr=TCS34725_REG_STATUS;
-    tcs34725_read_reg(p_instance, &status, user_cb);
-}
-
 ret_code_t tcs34725_set_timing(tcs34725_instance_t const * p_instance,
                                 uint16_t atime)
 {
@@ -215,31 +186,16 @@ ret_code_t tcs34725_set_threshold(tcs34725_instance_t const * p_instance,
 }
 
 ret_code_t tcs34725_read_threshold(tcs34725_instance_t const * p_instance, 
-                                   tcs34725_threshold_lh_t thr_low_high,
+                                   tcs34725_threshold_data_t * thr_data_str,
                                    tcs34725_threshold_callback_t user_cb)
 {
     ret_code_t err_code;
-    static tcs34725_threshold_data_t thr_data_str;
-
-    if(thr_low_high==TCS34725_THRESHOLD_LOW)
-    {
-        thr_data_str.reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
-    }
-    else if(thr_low_high==TCS34725_THRESHOLD_HIGH)
-    {
-        thr_data_str.reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
-    }
-    else
-    {
-        err_code=NRF_ERROR_INVALID_ADDR;
-        return err_code;
-    }
 
     err_code=nrf_twi_sensor_reg_read(p_instance->p_sensor_data,
                                      p_instance->sensor_addr,
-                                     thr_data_str.reg_addr|0xA0,
+                                     thr_data_str->reg_addr|0xA0,
                                      (nrf_twi_sensor_reg_cb_t) user_cb,
-                                     (uint8_t *) &thr_data_str,
+                                     (uint8_t *) thr_data_str,
                                      TCS34725_THRESHOLD_BYTES);
     return err_code;
 }

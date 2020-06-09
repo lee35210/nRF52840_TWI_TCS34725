@@ -90,9 +90,6 @@ TCS34725_INSTANCE_DEF(tcs34725_instance, &sensor_instance, TCS34725_ADDR);
 
 APP_TIMER_DEF(m_timer);
 
-tcs34725_color_data_t color_str;
-
-
 void log_init(void)
 {
     ret_code_t err_code;
@@ -166,13 +163,14 @@ void tcs34725_read_reg_cb(ret_code_t result, tcs34725_reg_data_t * p_raw_data)
         default :
             break;
     }
+    free(p_raw_data);
 }
 
 void tcs34725_rgbc_callback(ret_code_t result, tcs34725_color_data_t * p_raw_data)
 {
     if(result!=NRF_SUCCESS)
     {
-        NRF_LOG_INFO("tcs reg callback failed");
+        NRF_LOG_INFO("tcs rgbc callback failed");
         return;
     }
     tcs34725_rgbc_print(p_raw_data);
@@ -193,14 +191,17 @@ void tcs34725_read_thr_cb(ret_code_t result, tcs34725_threshold_data_t * p_reg_d
     {
         NRF_LOG_INFO("Threshold High value : %d",p_reg_data->threshold_data);
     }
+    free(p_reg_data);
 }
 
 void timer_handler(void * p_context)
 {
     ret_code_t err_code;
 
-    //RGBC read 함수 호출
-    tcs34725_read_rgbc(&tcs34725_instance, &color_str, tcs34725_rgbc_callback);
+    tcs34725_color_data_t *color_str=(tcs34725_color_data_t*)malloc(sizeof(tcs34725_color_data_t));
+
+    //RGBC read
+    tcs34725_read_rgbc(&tcs34725_instance, color_str, tcs34725_rgbc_callback);
     APP_ERROR_CHECK(err_code);
 }
 
@@ -326,12 +327,57 @@ void tcs34725_read_config()
 {
     ret_code_t err_code;
 
-    tcs34725_read_all_config(&tcs34725_instance, tcs34725_read_reg_cb);
+    tcs34725_reg_data_t *enable=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *timing=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *wait_time=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *persistence=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *config=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *control=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *id=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    tcs34725_reg_data_t *status=(tcs34725_reg_data_t*)malloc(sizeof(tcs34725_reg_data_t));
+    
+    tcs34725_threshold_data_t *threshold_low=(tcs34725_threshold_data_t*)malloc(sizeof(tcs34725_threshold_data_t));
+    tcs34725_threshold_data_t *threshold_high=(tcs34725_threshold_data_t*)malloc(sizeof(tcs34725_threshold_data_t));
 
-    err_code=tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_LOW, tcs34725_read_thr_cb);
+
+    enable->reg_addr=TCS34725_REG_ENABLE;
+    err_code=tcs34725_read_reg(&tcs34725_instance, enable, tcs34725_read_reg_cb);
     APP_ERROR_CHECK(err_code);
-    nrf_delay_ms(10);
-    err_code=tcs34725_read_threshold(&tcs34725_instance, TCS34725_THRESHOLD_HIGH, tcs34725_read_thr_cb);
+
+    timing->reg_addr=TCS34725_REG_TIMING;
+    err_code=tcs34725_read_reg(&tcs34725_instance, timing, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+
+    wait_time->reg_addr=TCS34725_REG_WAIT_TIME;
+    err_code=tcs34725_read_reg(&tcs34725_instance, wait_time, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+            
+    persistence->reg_addr=TCS34725_REG_PERSISTENCE;
+    err_code=tcs34725_read_reg(&tcs34725_instance, persistence, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+    
+    config->reg_addr=TCS34725_REG_CONFIG;
+    err_code=tcs34725_read_reg(&tcs34725_instance, config, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+    
+    control->reg_addr=TCS34725_REG_CONTROL;
+    err_code=tcs34725_read_reg(&tcs34725_instance, control, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+
+    id->reg_addr=TCS34725_REG_ID;
+    err_code=tcs34725_read_reg(&tcs34725_instance, id, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+
+    status->reg_addr=TCS34725_REG_STATUS;
+    err_code=tcs34725_read_reg(&tcs34725_instance, status, tcs34725_read_reg_cb);
+    APP_ERROR_CHECK(err_code);
+
+    threshold_low->reg_addr=TCS34725_REG_THRESHOLD_LOW_L;
+    err_code=tcs34725_read_threshold(&tcs34725_instance, threshold_low, tcs34725_read_thr_cb);
+    APP_ERROR_CHECK(err_code);
+
+    threshold_high->reg_addr=TCS34725_REG_THRESHOLD_HIGH_L;
+    err_code=tcs34725_read_threshold(&tcs34725_instance, threshold_high, tcs34725_read_thr_cb);
     APP_ERROR_CHECK(err_code);
 }
 
