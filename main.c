@@ -174,6 +174,7 @@ void tcs34725_rgbc_callback(ret_code_t result, tcs34725_color_data_t * p_raw_dat
         return;
     }
     tcs34725_rgbc_print(p_raw_data);
+    free(p_raw_data);
 }
 
 void tcs34725_read_thr_cb(ret_code_t result, tcs34725_threshold_data_t * p_reg_data)
